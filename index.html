@@ -1,16 +1,16 @@
 <html>
 <head>
-  <title>Dayy Time</title>
+  <title>Dayy</title>
   <link rel="stylesheet" href="./public/css/vendor/bootstrap.min.css" />
   <link rel="stylesheet" href="./public/css/app.css" />
 </head>
 <body class="container" ng-app="App">
 
-  <h1>Dayy Time</h1>
-  <div class="row" ng-controller="AppCtrl">
+  <h1>Dayy</h1>
+  <div class="row" ng-controller="AppCtrl" ng-keypress="handleKeypress($event)">
     <div class="col-md-6 border-right tall-column">
       <div ng-repeat="halfHour in halfHours" class="half-hour">
-        <span ng-bind="formatHalfHour(halfHour)" ng-show="showHalfHour(halfHour)"></span>
+        <span ng-bind="formatTime(halfHour.time)" ng-show="showTime(halfHour.time)"></span>
       </div>
     </div>
     <div class="col-md-6 tall-column">
