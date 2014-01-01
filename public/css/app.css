@@ -1,0 +1,14 @@
+.border-right {
+  border-right: #ddd 1px solid;
+}
+
+.half-hour {
+  border-bottom: #eee 1px solid;
+  color: #999;
+  height: 30px;
+  font-size: 11px;
+}
+
+.tall-column {
+  min-height: 1000px;
+}
