@@ -11,12 +11,14 @@ angular.module('App')
       _onValueCallback = function (blocksJsonStringSnapshot) {
         var blocks = JSON.parse(blocksJsonStringSnapshot.val());
         callback(blocks);
+        console.log('refreshed.');
       };
       firebaseRef.on('value', _onValueCallback);
     },
     saveBlocks: function (blocks) {
       var blocksJsonString = JSON.stringify(blocks);
       firebaseRef.set(blocksJsonString);
+      console.log('saved.');
     }
   };
 });

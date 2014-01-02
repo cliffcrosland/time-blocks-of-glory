@@ -67,14 +67,32 @@ function ($scope, $document, keyService, $timeout, $window, storageService) {
   }
 
   $document.bind('keydown', function (evt) {
+    if ($scope.editing) {
+      handleEditModeEvent(evt);
+    } else {
+      handleCommandModeEvent(evt);
+    }
+  });
+
+  function handleEditModeEvent(evt) {
+    if (keyService.isEnter(evt)) {
+      toggleEditSelectedBlock();
+    } else if (keyService.isEscape(evt)) {
+      exitEditSelectedBlock();
+    }
+  }
+
+  function handleCommandModeEvent(evt) {
     keyService.preventDefaults(evt);
     if (keyService.isCtrlA(evt)) {
       addBlock();
-    } else if (keyService.isShiftUpOrDown(evt)) {
+    } else if (keyService.isCtrlS(evt)) {
+      saveBlocks();
+    } else if (keyService.isCtrlUpOrDown(evt)) {
       keyService.isUp(evt)
         ? shrinkSelectedBlock()
         : growSelectedBlock();
-    } else if (keyService.isCtrlUpOrDown(evt)) {
+    } else if (keyService.isShiftUpOrDown(evt)) {
       keyService.isUp(evt)
         ? moveSelectedBlockUp()
         : moveSelectedBlockDown();
@@ -82,20 +100,16 @@ function ($scope, $document, keyService, $timeout, $window, storageService) {
       keyService.isUp(evt)
         ? selectPreviousBlock()
         : selectNextBlock();
-    } else if (keyService.isEnter(evt)) {
+    } else if (keyService.isEnter(evt) || keyService.isO(evt)) {
       toggleEditSelectedBlock();
     } else if (keyService.isEscape(evt)) {
-      if ($scope.editing) {
-        exitEditSelectedBlock();
-      } else if ($scope.selectedBlock) {
-        $scope.apply(function () {
-          $scope.selectedBlock = null;
-        });
-      }
+      $scope.$apply(function () {
+        $scope.selectedBlock = null;
+      });
     } else if (keyService.isCtrlDelete(evt)) {
       deleteSelectedBlock();
     }
-  });
+  }
   
   function addBlock() {
     var blockStart = startHour;
@@ -106,6 +120,10 @@ function ($scope, $document, keyService, $timeout, $window, storageService) {
     $scope.blocks.push(block);
     $scope.selectedBlock = block;
     syncHalfHourBlocks();
+  }
+
+  function saveBlocks() {
+    storageService.saveBlocks($scope.blocks);
   }
 
   function shrinkSelectedBlock() {
@@ -178,23 +196,31 @@ function ($scope, $document, keyService, $timeout, $window, storageService) {
   function toggleEditSelectedBlock() {
     if (!$scope.selectedBlock) return;
     $scope.editing = !$scope.editing;
-    storageService.saveBlocks($scope.blocks);
+    if (!$scope.editing) {
+      // if we are exiting edit mode, save the blocks
+      saveBlocks();
+    }
     $scope.$digest();
   }
 
   function exitEditSelectedBlock() {
     if (!$scope.selectedBlock) return;
     $scope.editing = false;
-    storageService.saveBlocks($scope.blocks);
+    saveBlocks();
     $scope.$digest();
   }
 
   function deleteSelectedBlock() {
     if (!$scope.selectedBlock) return;
+    var blockToDelete = $scope.selectedBlock;
+    if ($scope.blocks.indexOf(blockToDelete) == 0) {
+      selectNextBlock();
+    } else {
+      selectPreviousBlock();
+    }
     $scope.blocks = _.reject($scope.blocks, function (block) { 
-      return block == $scope.selectedBlock; 
+      return block == blockToDelete; 
     });
-    selectNextBlock();
     syncHalfHourBlocks();
   }
 
@@ -205,7 +231,7 @@ function ($scope, $document, keyService, $timeout, $window, storageService) {
 
     var skipSave = opt && opt.skipSave;
     if (!skipSave) {
-      storageService.saveBlocks($scope.blocks);
+      saveBlocks();
     }
 
     _.each($scope.halfHours, function (halfHour) {
@@ -230,10 +256,6 @@ function ($scope, $document, keyService, $timeout, $window, storageService) {
     var blockIsAboveWindow = blockElem.offset().top < $($window).scrollTop();
     var blockIsBelowWindow = blockElem.offset().top + blockHeight > $($window).scrollTop() + $window.innerHeight;
 
-    console.log('blockIsAboveWindow: ' + blockIsAboveWindow);
-    console.log('blockIsBelowWindow: ' + blockIsBelowWindow);
-    console.log('');
-
     if (blockIsAboveWindow) {
       scrollTop = blockElem.offset().top - 80;
     } else if (blockIsBelowWindow) {
@@ -257,5 +279,7 @@ function ($scope, $document, keyService, $timeout, $window, storageService) {
       $scope.selectedBlock = newBlocks[0] || null;
     }
   }
+
+
 
 }]);
