@@ -1,18 +1,22 @@
 angular.module('App', []);
 
 angular.module('App')
-.controller('AppCtrl', ['$scope', '$document', 'keyService', function ($scope, $document, keyService) {
+.controller('AppCtrl', ['$scope', '$document', 'keyService', '$timeout', function ($scope, $document, keyService, $timeout) {
   var startHour = 5;
   var endHour = 23;
 
   $scope.halfHours = [];
-  $scope.blocks = [];
+  $scope.blocks = loadBlocksFromLocalStorage() || [];
   $scope.selectedBlock = null;
 
-  for (var time = startHour; time <= endHour; time += 0.5) {
-    $scope.halfHours.push({ time: time, blocks: [] });
-  }
-
+  $timeout(function () {
+     for (var time = startHour; time < endHour; time += 0.5) {
+      $scope.halfHours.push({ time: time, blocks: [] });
+    }
+    syncHalfHourBlocks();
+    $scope.selectedBlock = $scope.blocks[0] || null;
+  });
+    
   $scope.shouldShowTime = function (time) {
     return time == Math.floor(time);
   };
@@ -23,22 +27,6 @@ angular.module('App')
     }
     return time;
   }
-
-  $scope.syncHalfHourBlocks = function () {
-    _.each($scope.halfHours, function (halfHour) {
-      halfHour.blocks = [];
-    });
-    _.each($scope.blocks, function (block) {
-      var start = block.start;
-      var end = block.start + block.size * 0.5;
-      _.each($scope.halfHours, function (halfHour) {
-        if (halfHour.time >= start && halfHour.time < end) {
-          halfHour.blocks.push(block);
-        }
-      });
-    });
-    $scope.$digest();
-  };
 
   $scope.getBlockStyleInHalfHour = function (block, halfHour) {
     var borderStyle = '1px solid #ccc';
@@ -79,12 +67,12 @@ angular.module('App')
         : growSelectedBlock();
     } else if (keyService.isCtrlUpOrDown(evt)) {
       keyService.isUp(evt)
-        ? selectPreviousBlock()
-        : selectNextBlock();
-    } else if (keyService.isUpOrDown(evt)) {
-      keyService.isUp(evt)
         ? moveSelectedBlockUp()
         : moveSelectedBlockDown();
+    } else if (keyService.isUpOrDown(evt)) {
+      keyService.isUp(evt)
+        ? selectPreviousBlock()
+        : selectNextBlock();
     } else if (keyService.isEnter(evt)) {
       toggleEditSelectedBlock();
     } else if (keyService.isEscape(evt)) {
@@ -99,37 +87,45 @@ angular.module('App')
   });
   
   function addBlock() {
-    var block = { start: startHour, size: 1, name: '' };
+    var blockStart = startHour;
+    if ($scope.blocks.length > 0) {
+      blockStart = $scope.blocks[$scope.blocks.length - 1].start;
+    }
+    var block = { start: blockStart, size: 1, name: '' };
     $scope.blocks.push(block);
     $scope.selectedBlock = block;
-    $scope.syncHalfHourBlocks();
+    syncHalfHourBlocks();
   }
 
   function shrinkSelectedBlock() {
     if (!$scope.selectedBlock) return;
     if ($scope.selectedBlock.size == 1) return;
     $scope.selectedBlock.size--;
-    $scope.syncHalfHourBlocks();
+    syncHalfHourBlocks();
   }
 
   function growSelectedBlock() {
     if (!$scope.selectedBlock) return;
     $scope.selectedBlock.size++;
-    $scope.syncHalfHourBlocks();
+    syncHalfHourBlocks();
   }
 
   function moveSelectedBlockUp() {
     if (!$scope.selectedBlock) return;
-    if ($scope.selectedBlock.start == startHour) return;
     $scope.selectedBlock.start -= 0.5;
-    $scope.syncHalfHourBlocks();
+    if ($scope.selectedBlock.start < startHour) {
+      $scope.selectedBlock.start = endHour - 0.5;
+    }
+    syncHalfHourBlocks();
   }
 
   function moveSelectedBlockDown() {
     if (!$scope.selectedBlock) return;
-    if ($scope.selectedBlock.start + 0.5 * $scope.selectedBlock.size == endHour) return;
     $scope.selectedBlock.start += 0.5;
-    $scope.syncHalfHourBlocks();
+    if ($scope.selectedBlock.start == endHour) {
+      $scope.selectedBlock.start = startHour;
+    }
+    syncHalfHourBlocks();
   }
 
   function selectPreviousBlock() {
@@ -180,7 +176,35 @@ angular.module('App')
       return block == $scope.selectedBlock; 
     });
     selectNextBlock();
-    $scope.syncHalfHourBlocks();
+    syncHalfHourBlocks();
   }
+
+  function loadBlocksFromLocalStorage() {
+    return localStorage['blocks'] && JSON.parse(localStorage['blocks']);
+  }
+
+  function saveBlocksToLocalStorage(blocks) {
+    localStorage['blocks'] = JSON.stringify(blocks);
+  }
+
+  function syncHalfHourBlocks() {
+    $scope.blocks.sort(function (a, b) {
+      return a.start - b.start;
+    });
+    saveBlocksToLocalStorage($scope.blocks);
+    _.each($scope.halfHours, function (halfHour) {
+      halfHour.blocks = [];
+    });
+    _.each($scope.blocks, function (block) {
+      var start = block.start;
+      var end = block.start + block.size * 0.5;
+      _.each($scope.halfHours, function (halfHour) {
+        if (halfHour.time >= start && halfHour.time < end) {
+          halfHour.blocks.push(block);
+        }
+      });
+    });
+    $scope.$digest();
+  };
 
 }]);
