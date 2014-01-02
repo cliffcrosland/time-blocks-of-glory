@@ -21,17 +21,24 @@
 
 .blocks > .block {
   background-color: #E8E8E8;
-  opacity: 0.5;
+  /*opacity: 0.5;*/
   float: left;
   height: 100%;
   border-right: 2px #eee solid;
-  color: #000;
+  color: rgb(51, 51, 51);
   font-size: 14px;
   padding: 2px;
+  padding-left: 10px;
 }
 
-.blocks > .block input {
+.blocks > .block input[type=text] {
   width: 90%;
+  color: rgb(51, 51, 51);
+}
+
+.blocks > .block .block-name {
+  margin-top: 3px;
+  margin-left: 3px;
 }
 
 .blocks > .block:first-child {
