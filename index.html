@@ -10,6 +10,7 @@
   <div class="row" ng-controller="AppCtrl" ng-keypress="handleKeypress($event)">
 
     <div class="col-md-6 border-right tall-column">
+      <div style="text-align: center" ng-show="loading">Loading...</div>
       <div ng-repeat="halfHour in halfHours" class="half-hour">
         <span ng-bind="formatTime(halfHour.time)" 
               ng-show="shouldShowTime(halfHour.time)" 
@@ -40,8 +41,11 @@
   <script src="./public/js/vendor/jquery.min.js"></script>
   <script src="./public/js/vendor/angular.min.js"></script>
   <script src="./public/js/vendor/underscore.min.js"></script>
+  <script src="./public/js/vendor/firebase.min.js"></script>
+
   <script src="./public/js/app.js"></script>
   <script src="./public/js/key-service.js"></script>
+  <script src="./public/js/storage-service.js"></script>
   <script src="./public/js/focus-on-directive.js"></script>
 </body>
 </html>

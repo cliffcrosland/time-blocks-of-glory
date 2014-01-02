@@ -1,21 +1,25 @@
 angular.module('App', []);
 
 angular.module('App')
-.controller('AppCtrl', ['$scope', '$document', 'keyService', '$timeout', '$window',
-function ($scope, $document, keyService, $timeout, $window) {
+.controller('AppCtrl', ['$scope', '$document', 'keyService', '$timeout', '$window', 'storageService',
+function ($scope, $document, keyService, $timeout, $window, storageService) {
   var startHour = 5;
   var endHour = 23;
 
   $scope.halfHours = [];
-  $scope.blocks = loadBlocksFromLocalStorage() || [];
+  $scope.blocks = [];
   $scope.selectedBlock = null;
 
-  $timeout(function () {
-     for (var time = startHour; time < endHour; time += 0.5) {
-      $scope.halfHours.push({ time: time, blocks: [] });
-    }
+  for (var time = startHour; time < endHour; time += 0.5) {
+    $scope.halfHours.push({ time: time, blocks: [] });
+  }
+
+  $scope.loading = true;
+  storageService.onBlocksValue(function (blocks) {
+    $scope.loading = false;
+    $scope.blocks = blocks || [];
+    updateSelectedBlock($scope.blocks);
     syncHalfHourBlocks();
-    $scope.selectedBlock = $scope.blocks[0] || null;
   });
     
   $scope.shouldShowTime = function (time) {
@@ -96,7 +100,7 @@ function ($scope, $document, keyService, $timeout, $window) {
     if ($scope.selectedBlock) {
       blockStart = $scope.selectedBlock.start;
     }
-    var block = { start: blockStart, size: 1, name: '' };
+    var block = { start: blockStart, size: 1, name: 'New block' };
     $scope.blocks.push(block);
     $scope.selectedBlock = block;
     syncHalfHourBlocks();
@@ -172,12 +176,14 @@ function ($scope, $document, keyService, $timeout, $window) {
   function toggleEditSelectedBlock() {
     if (!$scope.selectedBlock) return;
     $scope.editing = !$scope.editing;
+    storageService.saveBlocks($scope.blocks);
     $scope.$digest();
   }
 
   function exitEditSelectedBlock() {
     if (!$scope.selectedBlock) return;
     $scope.editing = false;
+    storageService.saveBlocks($scope.blocks);
     $scope.$digest();
   }
 
@@ -190,19 +196,13 @@ function ($scope, $document, keyService, $timeout, $window) {
     syncHalfHourBlocks();
   }
 
-  function loadBlocksFromLocalStorage() {
-    return localStorage['blocks'] && JSON.parse(localStorage['blocks']);
-  }
-
-  function saveBlocksToLocalStorage(blocks) {
-    localStorage['blocks'] = JSON.stringify(blocks);
-  }
-
   function syncHalfHourBlocks() {
     $scope.blocks.sort(function (a, b) {
       return a.start - b.start;
     });
-    saveBlocksToLocalStorage($scope.blocks);
+
+    storageService.saveBlocks($scope.blocks);
+
     _.each($scope.halfHours, function (halfHour) {
       halfHour.blocks = [];
     });
@@ -240,6 +240,17 @@ function ($scope, $document, keyService, $timeout, $window) {
     angular.element('html, body').animate({
       scrollTop: scrollTop
     }, 100);
+  }
+
+  function updateSelectedBlock(newBlocks) {
+    if ($scope.selectedBlock) {
+      $scope.selectedBlock = _.find(newBlocks, function (block) {
+        return block.name == $scope.selectedBlock.name &&
+               block.time == $scope.selectedBlock.time;
+      });
+    } else {
+      $scope.selectedBlock = newBlocks[0] || null;
+    }
   }
 
 }]);
