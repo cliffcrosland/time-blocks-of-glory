@@ -54,6 +54,10 @@ angular.module('App')
     return $scope.selectedBlock == block && $scope.editing;
   }
 
+  $scope.isFirstHalfHourOfBlock = function (halfHour, block) {
+    return halfHour.time == block.start;
+  }
+
   $document.bind('keydown', function (evt) {
     keyService.preventDefaults(evt);
     if (keyService.isCtrlA(evt)) {
