@@ -88,8 +88,8 @@ angular.module('App')
   
   function addBlock() {
     var blockStart = startHour;
-    if ($scope.blocks.length > 0) {
-      blockStart = $scope.blocks[$scope.blocks.length - 1].start;
+    if ($scope.selectedBlock) {
+      blockStart = $scope.selectedBlock.start;
     }
     var block = { start: blockStart, size: 1, name: '' };
     $scope.blocks.push(block);
