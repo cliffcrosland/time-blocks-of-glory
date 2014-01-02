@@ -2,7 +2,7 @@ angular.module('App', []);
 
 angular.module('App')
 .controller('AppCtrl', ['$scope', '$document', 'keyService', '$timeout', '$window', 'storageService',
-function ($scope, $document, keyService, $timeout, $window, storageService) {
+function ($scope, $document, keys, $timeout, $window, storageService) {
   var startHour = 5;
   var endHour = 23;
 
@@ -66,7 +66,7 @@ function ($scope, $document, keyService, $timeout, $window, storageService) {
     return 'block-' + $scope.blocks.indexOf(block);
   }
 
-  $document.bind('keydown', function (evt) {
+  keys.onKeydown(function (evt) {
     if ($scope.editing) {
       handleEditModeEvent(evt);
     } else {
@@ -75,38 +75,36 @@ function ($scope, $document, keyService, $timeout, $window, storageService) {
   });
 
   function handleEditModeEvent(evt) {
-    if (keyService.isEnter(evt)) {
-      toggleEditSelectedBlock();
-    } else if (keyService.isEscape(evt)) {
+    if (keys.isEscape(evt) || keys.isEnter(evt)) {
       exitEditSelectedBlock();
     }
   }
 
   function handleCommandModeEvent(evt) {
-    keyService.preventDefaults(evt);
-    if (keyService.isCtrlA(evt)) {
+    keys.preventDefaults(evt);
+    if (keys.isCtrlA(evt)) {
       addBlock();
-    } else if (keyService.isCtrlS(evt)) {
+    } else if (keys.isCtrlS(evt)) {
       saveBlocks();
-    } else if (keyService.isCtrlUpOrDown(evt)) {
-      keyService.isUp(evt)
+    } else if (keys.isCtrlUpOrDown(evt)) {
+      keys.isUp(evt)
         ? shrinkSelectedBlock()
         : growSelectedBlock();
-    } else if (keyService.isShiftUpOrDown(evt)) {
-      keyService.isUp(evt)
+    } else if (keys.isShiftUpOrDown(evt)) {
+      keys.isUp(evt)
         ? moveSelectedBlockUp()
         : moveSelectedBlockDown();
-    } else if (keyService.isUpOrDown(evt)) {
-      keyService.isUp(evt)
+    } else if (keys.isUpOrDown(evt)) {
+      keys.isUp(evt)
         ? selectPreviousBlock()
         : selectNextBlock();
-    } else if (keyService.isEnter(evt) || keyService.isO(evt)) {
-      toggleEditSelectedBlock();
-    } else if (keyService.isEscape(evt)) {
+    } else if (keys.isEnter(evt) || keys.isO(evt) || keys.isDoubleC(evt)) {
+      editSelectedBlock({ selectText: keys.isDoubleC(evt)});
+    } else if (keys.isEscape(evt)) {
       $scope.$apply(function () {
         $scope.selectedBlock = null;
       });
-    } else if (keyService.isCtrlDelete(evt)) {
+    } else if (keys.isCtrlDelete(evt)) {
       deleteSelectedBlock();
     }
   }
@@ -193,20 +191,25 @@ function ($scope, $document, keyService, $timeout, $window, storageService) {
     scrollToBlock($scope.selectedBlock);
   }
 
-  function toggleEditSelectedBlock() {
+  function editSelectedBlock(opt) {
     if (!$scope.selectedBlock) return;
-    $scope.editing = !$scope.editing;
-    if (!$scope.editing) {
-      // if we are exiting edit mode, save the blocks
-      saveBlocks();
-    }
+    $scope.editing = true;
     $scope.$digest();
+    var blockElem = $('#' + $scope.getBlockId($scope.selectedBlock));
+    var input = blockElem.find('input');
+    input.focus();
+    if (opt && opt.selectText) {
+      input.select();
+    }
   }
 
   function exitEditSelectedBlock() {
     if (!$scope.selectedBlock) return;
     $scope.editing = false;
     saveBlocks();
+    var blockElem = $('#' + $scope.getBlockId($scope.selectedBlock));
+    var input = blockElem.find('input');
+    input.blur();
     $scope.$digest();
   }
 
