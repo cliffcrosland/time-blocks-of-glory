@@ -1,7 +1,8 @@
 angular.module('App', []);
 
 angular.module('App')
-.controller('AppCtrl', ['$scope', '$document', 'keyService', '$timeout', function ($scope, $document, keyService, $timeout) {
+.controller('AppCtrl', ['$scope', '$document', 'keyService', '$timeout', '$window',
+function ($scope, $document, keyService, $timeout, $window) {
   var startHour = 5;
   var endHour = 23;
 
@@ -57,6 +58,10 @@ angular.module('App')
     return halfHour.time == block.start;
   }
 
+  $scope.getBlockId = function (block) {
+    return 'block-' + $scope.blocks.indexOf(block);
+  }
+
   $document.bind('keydown', function (evt) {
     keyService.preventDefaults(evt);
     if (keyService.isCtrlA(evt)) {
@@ -102,12 +107,14 @@ angular.module('App')
     if ($scope.selectedBlock.size == 1) return;
     $scope.selectedBlock.size--;
     syncHalfHourBlocks();
+    scrollToBlock($scope.selectedBlock);
   }
 
   function growSelectedBlock() {
     if (!$scope.selectedBlock) return;
     $scope.selectedBlock.size++;
     syncHalfHourBlocks();
+    scrollToBlock($scope.selectedBlock);
   }
 
   function moveSelectedBlockUp() {
@@ -117,6 +124,7 @@ angular.module('App')
       $scope.selectedBlock.start = endHour - 0.5;
     }
     syncHalfHourBlocks();
+    scrollToBlock($scope.selectedBlock);
   }
 
   function moveSelectedBlockDown() {
@@ -126,6 +134,7 @@ angular.module('App')
       $scope.selectedBlock.start = startHour;
     }
     syncHalfHourBlocks();
+    scrollToBlock($scope.selectedBlock);
   }
 
   function selectPreviousBlock() {
@@ -141,6 +150,7 @@ angular.module('App')
     }
     $scope.selectedBlock = $scope.blocks[prevIndex];
     $scope.$digest();
+    scrollToBlock($scope.selectedBlock);
   }
 
   function selectNextBlock() {
@@ -156,6 +166,7 @@ angular.module('App')
     }
     $scope.selectedBlock = $scope.blocks[nextIndex];
     $scope.$digest();
+    scrollToBlock($scope.selectedBlock);
   }
 
   function toggleEditSelectedBlock() {
@@ -205,6 +216,30 @@ angular.module('App')
       });
     });
     $scope.$digest();
-  };
+  }
+
+  function scrollToBlock(block) {
+    var blockElem = $('#' + $scope.getBlockId(block));
+    var blockHeight = blockElem.height() * block.size;
+    var scrollTop = null;
+    var blockIsAboveWindow = blockElem.offset().top < $($window).scrollTop();
+    var blockIsBelowWindow = blockElem.offset().top + blockHeight > $($window).scrollTop() + $window.innerHeight;
+
+    console.log('blockIsAboveWindow: ' + blockIsAboveWindow);
+    console.log('blockIsBelowWindow: ' + blockIsBelowWindow);
+    console.log('');
+
+    if (blockIsAboveWindow) {
+      scrollTop = blockElem.offset().top - 80;
+    } else if (blockIsBelowWindow) {
+      scrollTop = blockElem.offset().top - $window.innerHeight + 80 + blockHeight;
+    } else {
+      return;
+    }
+
+    angular.element('html, body').animate({
+      scrollTop: scrollTop
+    }, 100);
+  }
 
 }]);

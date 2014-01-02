@@ -21,7 +21,10 @@
                ng-style="getBlockStyleInHalfHour(block, halfHour)">
             <div ng-switch="isFirstHalfHourOfBlock(halfHour, block)">
               <div ng-switch-when="true">
-                <div class="block-name" ng-bind="block.name" ng-hide="isEditingBlockName(block)"></div>
+                <div class="block-name" 
+                     id="{{ getBlockId(block) }}"
+                     ng-bind="block.name" 
+                     ng-hide="isEditingBlockName(block)"></div>
                 <input type="text" ng-model="block.name" ng-show="isEditingBlockName(block)" focus-on="isEditingBlockName(block)" />
               </div>
             </div>
@@ -34,6 +37,7 @@
     <div class="col-md-6 tall-column"></div>
   </div>
 
+  <script src="./public/js/vendor/jquery.min.js"></script>
   <script src="./public/js/vendor/angular.min.js"></script>
   <script src="./public/js/vendor/underscore.min.js"></script>
   <script src="./public/js/app.js"></script>
