@@ -88,7 +88,9 @@ function ($scope, $document, keyService, $timeout, $window, storageService) {
       if ($scope.editing) {
         exitEditSelectedBlock();
       } else if ($scope.selectedBlock) {
-        $scope.selectedBlock = null;
+        $scope.apply(function () {
+          $scope.selectedBlock = null;
+        });
       }
     } else if (keyService.isCtrlDelete(evt)) {
       deleteSelectedBlock();

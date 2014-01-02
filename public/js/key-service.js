@@ -6,11 +6,13 @@ angular.module('App')
   }
 
   function isUp(evt) {
-    return evt.keyCode == 38;
+    return evt.keyCode == 38 || // up arrow
+           evt.keyCode == 75;   // letter k
   }
 
   function isDown(evt) {
-    return evt.keyCode == 40;
+    return evt.keyCode == 40 || // down arrow
+           evt.keyCode == 74;   // letter j
   }
 
   function isUpOrDown(evt) {
