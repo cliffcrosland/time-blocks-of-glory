@@ -3,7 +3,7 @@
 }
 
 .half-hour {
-  border-bottom: #eee 1px solid;
+  /*border-bottom: #eee 1px solid;*/
   color: #999;
   height: 30px;
   font-size: 11px;
@@ -13,3 +13,35 @@
   min-height: 1000px;
 }
 
+.time-label {
+  float: left;
+  margin-right: 10px;
+  position: absolute;
+}
+
+.blocks > .block {
+  background-color: #E8E8E8;
+  opacity: 0.5;
+  float: left;
+  height: 100%;
+  border-right: 2px #eee solid;
+  color: #000;
+  font-size: 14px;
+  padding: 2px;
+}
+
+.blocks > .block input {
+  width: 90%;
+}
+
+.blocks > .block:first-child {
+  margin-left: 16px;
+}
+
+.blocks > .block:last-child {
+  border-right: none;
+}
+
+.blocks > .block.highlighted-block {
+  background-color: #D5D5D5;
+}
