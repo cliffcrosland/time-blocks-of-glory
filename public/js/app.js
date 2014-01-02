@@ -40,10 +40,21 @@ angular.module('App')
     $scope.$digest();
   };
 
-  $scope.getBlockWidthStyle = function (halfHour) {
-    return {
-      width: (97 / halfHour.blocks.length) + '%'
+  $scope.getBlockStyleInHalfHour = function (block, halfHour) {
+    var borderStyle = '1px solid #ccc';
+    var width = (97 / halfHour.blocks.length) + '%';
+    var style = {
+      'border-left': borderStyle,
+      'border-right': borderStyle,
+      'width': width
     };
+    if (block.start == halfHour.time) {
+      style['border-top'] = borderStyle;
+    }
+    if (block.start + (block.size - 1) * 0.5 == halfHour.time) {
+      style['border-bottom'] = borderStyle;
+    }
+    return style;
   }
 
   $scope.isBlockSelected = function (block) {
@@ -77,7 +88,11 @@ angular.module('App')
     } else if (keyService.isEnter(evt)) {
       toggleEditSelectedBlock();
     } else if (keyService.isEscape(evt)) {
-      exitEditSelectedBlock();
+      if ($scope.editing) {
+        exitEditSelectedBlock();
+      } else if ($scope.selectedBlock) {
+        $scope.selectedBlock = null;
+      }
     } else if (keyService.isCtrlDelete(evt)) {
       deleteSelectedBlock();
     }

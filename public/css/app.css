@@ -3,7 +3,6 @@
 }
 
 .half-hour {
-  /*border-bottom: #eee 1px solid;*/
   color: #999;
   height: 30px;
   font-size: 11px;
@@ -20,8 +19,7 @@
 }
 
 .blocks > .block {
-  background-color: #E8E8E8;
-  /*opacity: 0.5;*/
+  background-color: #ddd;
   float: left;
   height: 100%;
   border-right: 2px #eee solid;
@@ -50,5 +48,5 @@
 }
 
 .blocks > .block.highlighted-block {
-  background-color: #D5D5D5;
+  background-color: #E8E8E8;
 }
