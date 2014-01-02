@@ -19,7 +19,7 @@ function ($scope, $document, keyService, $timeout, $window, storageService) {
     $scope.loading = false;
     $scope.blocks = blocks || [];
     updateSelectedBlock($scope.blocks);
-    syncHalfHourBlocks();
+    syncHalfHourBlocks({ skipSave: true });
   });
     
   $scope.shouldShowTime = function (time) {
@@ -34,7 +34,7 @@ function ($scope, $document, keyService, $timeout, $window, storageService) {
   }
 
   $scope.getBlockStyleInHalfHour = function (block, halfHour) {
-    var borderStyle = '1px solid #ccc';
+    var borderStyle = '1px solid #ddd';
     var width = (97 / halfHour.blocks.length) + '%';
     var style = {
       'border-left': borderStyle,
@@ -196,12 +196,15 @@ function ($scope, $document, keyService, $timeout, $window, storageService) {
     syncHalfHourBlocks();
   }
 
-  function syncHalfHourBlocks() {
+  function syncHalfHourBlocks(opt) {
     $scope.blocks.sort(function (a, b) {
       return a.start - b.start;
     });
 
-    storageService.saveBlocks($scope.blocks);
+    var skipSave = opt && opt.skipSave;
+    if (!skipSave) {
+      storageService.saveBlocks($scope.blocks);
+    }
 
     _.each($scope.halfHours, function (halfHour) {
       halfHour.blocks = [];

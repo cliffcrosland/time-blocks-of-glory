@@ -19,7 +19,6 @@
 }
 
 .blocks > .block {
-  background-color: #ddd;
   float: left;
   height: 100%;
   border-right: 2px #eee solid;
@@ -48,5 +47,5 @@
 }
 
 .blocks > .block.highlighted-block {
-  background-color: #E8E8E8;
+  background-color: #f9f9f9;
 }

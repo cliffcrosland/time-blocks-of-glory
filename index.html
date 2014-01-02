@@ -9,7 +9,7 @@
   <h1>Time Blocks of Glory</h1>
   <div class="row" ng-controller="AppCtrl" ng-keypress="handleKeypress($event)">
 
-    <div class="col-md-6 border-right tall-column">
+    <div class="col-md-6 tall-column">
       <div style="text-align: center" ng-show="loading">Loading...</div>
       <div ng-repeat="halfHour in halfHours" class="half-hour">
         <span ng-bind="formatTime(halfHour.time)" 
