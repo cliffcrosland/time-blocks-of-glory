@@ -27,7 +27,7 @@
   font-size: 14px;
   padding: 2px;
   padding-left: 10px;
-  box-shadow: 2px 2px 4px 0 #ccc;
+  box-shadow: 3px 2px 2px 0 #eee;
   background-color: white;
 }
 
@@ -39,7 +39,7 @@
 }
 
 .blocks > .block .block-name {
-  margin-top: 3px;
+  margin-top: 2px;
   margin-left: 3px;
 }
 

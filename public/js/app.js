@@ -35,6 +35,7 @@ function ($scope, $document, key, $timeout, $window, storageService) {
 
   $scope.getBlockStyleInHalfHour = function (block, halfHour) {
     var borderStyle = '1px solid #ddd';
+    var borderRadiusStyle = '5px';
     var width = (97 / halfHour.blocks.length) + '%';
     var style = {
       'border-left': borderStyle,
@@ -43,10 +44,16 @@ function ($scope, $document, key, $timeout, $window, storageService) {
     };
     if (block.start == halfHour.time) {
       style['border-top'] = borderStyle;
+      style['border-top-left-radius'] = borderRadiusStyle;
+      style['border-top-right-radius'] = borderRadiusStyle;
     }
     if (block.start + (block.size - 1) * 0.5 == halfHour.time) {
       style['border-bottom'] = borderStyle;
+      style['border-bottom-left-radius'] = borderRadiusStyle;
+      style['border-bottom-right-radius'] = borderRadiusStyle;
+      style['height'] = '96%';
     }
+    console.log(style);
     return style;
   }
 
@@ -102,7 +109,7 @@ function ($scope, $document, key, $timeout, $window, storageService) {
                key.isO(evt) || 
                key.isDoubleC(evt)) {
       editSelectedBlock({ 
-        selectText: key.isDoubleC(evt)
+        selectText: key.isDoubleC(evt) || key.isEnter(evt)
       });
     } else if (key.isCtrlDelete(evt)) {
       deleteSelectedBlock();
