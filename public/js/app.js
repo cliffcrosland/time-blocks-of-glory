@@ -34,7 +34,7 @@ function ($scope, $document, key, $timeout, $window, storageService) {
   }
 
   $scope.getBlockStyleInHalfHour = function (block, halfHour) {
-    var borderStyle = '1px solid #ddd';
+    var borderStyle = '1px solid #ccc';
     var borderRadiusStyle = '5px';
     var width = (100 / halfHour.blocks.length) + '%';
     var style = {

@@ -24,7 +24,6 @@
 .blocks > .block {
   float: left;
   height: 100%;
-  /*border-right: 2px #eee solid;*/
   color: #333;
   font-size: 14px;
   padding: 2px;
