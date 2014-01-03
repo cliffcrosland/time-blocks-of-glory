@@ -5,7 +5,8 @@
 .half-hour {
   color: #999;
   height: 30px;
-  font-size: 11px;
+  font-size: 12px;
+  border-bottom: 1px solid #eee;
 }
 
 .tall-column {
@@ -16,6 +17,7 @@
   float: left;
   margin-right: 10px;
   position: absolute;
+  left: -6px;
   color: #333;
 }
 
@@ -44,7 +46,7 @@
 }
 
 .blocks > .block:first-child {
-  margin-left: 16px;
+  margin-left: 0px;
 }
 
 .blocks > .block:last-child {
