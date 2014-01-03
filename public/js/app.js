@@ -100,10 +100,6 @@ function ($scope, $document, keys, $timeout, $window, storageService) {
         : selectNextBlock();
     } else if (keys.isEnter(evt) || keys.isO(evt) || keys.isDoubleC(evt)) {
       editSelectedBlock({ selectText: keys.isDoubleC(evt)});
-    } else if (keys.isEscape(evt)) {
-      $scope.$apply(function () {
-        $scope.selectedBlock = null;
-      });
     } else if (keys.isCtrlDelete(evt)) {
       deleteSelectedBlock();
     }
@@ -198,6 +194,7 @@ function ($scope, $document, keys, $timeout, $window, storageService) {
     var blockElem = $('#' + $scope.getBlockId($scope.selectedBlock));
     var input = blockElem.find('input');
     input.focus();
+    $window.getSelection().collapseToEnd(); // unselect any residual selected text
     if (opt && opt.selectText) {
       input.select();
     }
