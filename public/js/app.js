@@ -2,7 +2,7 @@ angular.module('App', []);
 
 angular.module('App')
 .controller('AppCtrl', ['$scope', '$document', 'keyService', '$timeout', '$window', 'storageService',
-function ($scope, $document, keys, $timeout, $window, storageService) {
+function ($scope, $document, key, $timeout, $window, storageService) {
   var startHour = 5;
   var endHour = 23;
 
@@ -66,7 +66,7 @@ function ($scope, $document, keys, $timeout, $window, storageService) {
     return 'block-' + $scope.blocks.indexOf(block);
   }
 
-  keys.onKeydown(function (evt) {
+  key.onKeydown(function (evt) {
     if ($scope.editing) {
       handleEditModeEvent(evt);
     } else {
@@ -75,32 +75,36 @@ function ($scope, $document, keys, $timeout, $window, storageService) {
   });
 
   function handleEditModeEvent(evt) {
-    if (keys.isEscape(evt) || keys.isEnter(evt)) {
+    if (key.isEscape(evt) || key.isEnter(evt)) {
       exitEditSelectedBlock();
     }
   }
 
   function handleCommandModeEvent(evt) {
-    keys.preventDefaults(evt);
-    if (keys.isCtrlA(evt)) {
+    key.preventDefaults(evt);
+    if (key.isCtrlA(evt)) {
       addBlock();
-    } else if (keys.isCtrlS(evt)) {
+    } else if (key.isCtrlS(evt)) {
       saveBlocks();
-    } else if (keys.isCtrlUpOrDown(evt)) {
-      keys.isUp(evt)
+    } else if (key.isCtrlUpOrDown(evt)) {
+      key.isUp(evt)
         ? shrinkSelectedBlock()
         : growSelectedBlock();
-    } else if (keys.isShiftUpOrDown(evt)) {
-      keys.isUp(evt)
+    } else if (key.isShiftUpOrDown(evt)) {
+      key.isUp(evt)
         ? moveSelectedBlockUp()
         : moveSelectedBlockDown();
-    } else if (keys.isUpOrDown(evt)) {
-      keys.isUp(evt)
+    } else if (key.isUpOrDown(evt)) {
+      key.isUp(evt)
         ? selectPreviousBlock()
         : selectNextBlock();
-    } else if (keys.isEnter(evt) || keys.isO(evt) || keys.isDoubleC(evt)) {
-      editSelectedBlock({ selectText: keys.isDoubleC(evt)});
-    } else if (keys.isCtrlDelete(evt)) {
+    } else if (key.isEnter(evt) || 
+               key.isO(evt) || 
+               key.isDoubleC(evt)) {
+      editSelectedBlock({ 
+        selectText: key.isDoubleC(evt)
+      });
+    } else if (key.isCtrlDelete(evt)) {
       deleteSelectedBlock();
     }
   }
@@ -194,10 +198,20 @@ function ($scope, $document, keys, $timeout, $window, storageService) {
     var blockElem = $('#' + $scope.getBlockId($scope.selectedBlock));
     var input = blockElem.find('input');
     input.focus();
-    $window.getSelection().collapseToEnd(); // unselect any residual selected text
+    moveCaretToEnd(input);
     if (opt && opt.selectText) {
       input.select();
     }
+  }
+
+  function moveCaretToBeginning(input) {
+    input.select();
+    $window.getSelection().collapseToStart();
+  }
+
+  function moveCaretToEnd(input) {
+    input.select();
+    $window.getSelection().collapseToEnd();
   }
 
   function exitEditSelectedBlock() {
@@ -279,7 +293,5 @@ function ($scope, $document, keys, $timeout, $window, storageService) {
       $scope.selectedBlock = newBlocks[0] || null;
     }
   }
-
-
 
 }]);
