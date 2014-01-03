@@ -86,11 +86,11 @@ function ($scope, $document, key, $timeout, $window, storageService) {
       addBlock();
     } else if (key.isCtrlS(evt)) {
       saveBlocks();
-    } else if (key.isCtrlUpOrDown(evt)) {
+    } else if (key.isShiftUpOrDown(evt)) {
       key.isUp(evt)
         ? shrinkSelectedBlock()
         : growSelectedBlock();
-    } else if (key.isShiftUpOrDown(evt)) {
+    } else if (key.isCtrlUpOrDown(evt)) {
       key.isUp(evt)
         ? moveSelectedBlockUp()
         : moveSelectedBlockDown();

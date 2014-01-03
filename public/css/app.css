@@ -16,21 +16,24 @@
   float: left;
   margin-right: 10px;
   position: absolute;
+  color: #333;
 }
 
 .blocks > .block {
   float: left;
   height: 100%;
-  border-right: 2px #eee solid;
-  color: rgb(51, 51, 51);
+  /*border-right: 2px #eee solid;*/
+  color: #333;
   font-size: 14px;
   padding: 2px;
   padding-left: 10px;
+  box-shadow: 2px 2px 4px 0 #ccc;
+  background-color: white;
 }
 
 .blocks > .block input[type=text] {
   width: 90%;
-  color: rgb(51, 51, 51);
+  color: #333;
   margin-left: -3px;
   margin-top: -3px;
 }
