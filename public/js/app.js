@@ -294,7 +294,7 @@ function ($scope, $document, key, $timeout, $window, storageService) {
     if ($scope.selectedBlock) {
       $scope.selectedBlock = _.find(newBlocks, function (block) {
         return block.name == $scope.selectedBlock.name &&
-               block.time == $scope.selectedBlock.time;
+               block.start == $scope.selectedBlock.start;
       });
     } else {
       $scope.selectedBlock = newBlocks[0] || null;
